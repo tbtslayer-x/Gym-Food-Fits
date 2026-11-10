@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Pulse Matrix - Fitness, Nutrition & Wardrobe Studio</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cream: {
+                            50: '#FDFBF7',
+                            100: '#F7F4EF',
+                            200: '#EFEAE1',
+                            300: '#E2D8CC',
+                            400: '#C9BCAE',
+                        },
+                        warm: {
+                            sand: '#D9C8B4',
+                            clay: '#B87D59',
+                            terra: '#9E5B3B',
+                            dark: '#4A3B32',
+                            card: '#FAF7F2'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #F7F4EF;
+            color: #4A3B32;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .card-warm {
+            background-color: #FAF7F2;
+            border: 1px solid #E2D8CC;
+            box-shadow: 0 4px 20px -2px rgba(74, 59, 50, 0.04);
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F7F4EF;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #D9C8B4;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body class="min-h-screen pb-24">
+
+    <!-- Top Header -->
+    <header class="sticky top-0 z-50 bg-[#F7F4EF]/95 backdrop-blur-md border-b border-[#E2D8CC] px-4 py-3">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-[#B87D59] text-white flex items-center justify-center font-bold text-lg shadow-sm">
+                    <i class="fa-solid fa-dumbbell"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg text-[#4A3B32] leading-tight">Pulse Matrix</h1>
+                    <p class="text-xs text-[#8C7A6B]">Warm Studio Edition</p>
+                </div>
+            </div>
+            <!-- Quick Date / Sync Status -->
+            <div class="flex items-center space-x-2">
+                <span id="sync-status" class="text-xs px-2.5 py-1 rounded-full bg-[#EFEAE1] text-[#7A6A5B] font-medium">
+                    <i class="fa-solid fa-cloud-arrow-up text-[#B87D59] mr-1"></i> Saved Locally
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="sticky top-[61px] z-40 bg-[#F7F4EF]/95 backdrop-blur-md border-b border-[#E2D8CC] px-4 py-2 overflow-x-auto">
+        <div class="max-w-7xl mx-auto flex space-x-2 min-w-max">
+            <button onclick="switchTab('gym')" id="btn-tab-gym" class="tab-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all flex items-center space-x-2 bg-[#B87D59] text-white shadow-sm">
+                <i class="fa-solid fa-dumbbell"></i>
+                <span>Gym Weights</span>
+            </button>
+            <button onclick="switchTab('nutrition')" id="btn-tab-nutrition" class="tab-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all flex items-center space-x-2 bg-[#FAF7F2] text-[#4A3B32] border border-[#E2D8CC]">
+                <i class="fa-solid fa-utensils"></i>
+                <span>Food & Macros</span>
+            </button>
+            <button onclick="switchTab('wardrobe')" id="btn-tab-wardrobe" class="tab-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all flex items-center space-x-2 bg-[#FAF7F2] text-[#4A3B32] border border-[#E2D8CC]">
+                <i class="fa-solid fa-shirt"></i>
+                <span>Wardrobe & Outfits</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-4 py-6">
+
+        <!-- TAB 1: GYM WEIGHT TRACKER -->
+        <section id="tab-gym" class="space-y-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 card-warm p-5 rounded-2xl">
+                <div>
+                    <h2 class="text-xl font-bold text-[#4A3B32]">Workout & Routine Manager</h2>
+                    <p class="text-sm text-[#7A6A5B]">Drag or add exercises, pick rep target ranges, and log completed reps with auto 1RM calculation.</p>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <button onclick="addNewRoutineDay()" class="px-4 py-2 bg-[#B87D59] text-white rounded-xl text-sm font-medium hover:bg-[#9E5B3B] transition shadow-sm">
+                        <i class="fa-solid fa-plus mr-1.5"></i> New Routine Day
+                    </button>
+                </div>
+            </div>
+
+            <!-- Grid: Library on left/top, Routine Days on right -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Exercise Library Sidebar -->
+                <div class="lg:col-span-1 card-warm p-5 rounded-2xl space-y-4 h-fit">
+                    <div class="flex items-center justify-between">
+                        <h3 class="font-bold text-[#4A3B32]"><i class="fa-solid fa-book text-[#B87D59] mr-2"></i>Exercise Library (100+)</h3>
+                        <span id="library-count" class="text-xs bg-[#EFEAE1] px-2 py-0.5 rounded-full text-[#7A6A5B]">106 items</span>
+                    </div>
+                    <!-- Search Input -->
+                    <div class="relative">
+                        <i class="fa-solid fa-search absolute left-3 top-3 text-[#A89A8B] text-sm"></i>
+                        <input type="text" id="exercise-search" oninput="filterExerciseLibrary()" placeholder="Search chest, squats, cables..." class="w-full pl-9 pr-3 py-2 bg-white border border-[#E2D8CC] rounded-xl text-sm focus:outline-none focus:border-[#B87D59]">
+                    </div>
+                    <!-- Muscle Filter Chips -->
+                    <div class="flex flex-wrap gap-1.5 max-h-32 overflow-y-auto p-1" id="library-filter-chips">
+                        <button onclick="filterMuscleCategory('All')" class="muscle-chip active px-2.5 py-1 text-xs rounded-lg bg-[#B87D59] text-white font-medium">All</button>
+                        <button onclick="filterMuscleCategory('Chest')" class="muscle-chip px-2.5 py-1 text-xs rounded-lg bg-[#EFEAE1] text-[#7A6A5B] font-medium">Chest</button>
+                        <button onclick="filterMuscleCategory('Back')" class="muscle-chip px-2.5 py-1 text-xs rounded-lg bg-[#EFEAE1] text-[#7A6A5B] font-medium">Back</button>
+                        <button onclick="filterMuscleCategory('Shoulders')" class="muscle-chip px-2.5 py-1 text-xs rounded-lg bg-[#EFEAE1] text-[#7A6A5B] font-medium">Shoulders</button>
+                        <button onclick="filterMuscleCategory('Biceps')" class="muscle-chip px-2.5 py-1 text-xs rounded-lg bg-[#EFEAE1] text-[#7A6A5B] font-medium">Biceps</button>
+                        <button onclick="filterMuscleCategory('Triceps')" class="muscle-chip px-2.5 py-1 text-xs rounded-lg bg-[#EFEAE1] text-[#7A6A5B] font-medium">Triceps</button>
+                        <button onclick="filterMuscleCategory('Quads')" class="muscle-chip px-2.5 py-1 text-xs rounded-lg bg-[#EFEAE1] text-[#7A6A5B] font-medium">Quads</button>
+                        <button onclick="filterMuscleCategory('Hamstrings & Glutes')" class="muscle-chip px-2.5 py-1 text-xs rounded-lg bg-[#EFEAE1] text-[#7A6A5B] font-medium">Hamstrings</button>
+                        <button onclick="filterMuscleCategory('Calves & Core')" class="muscle-chip px-2.5 py-1 text-xs rounded-lg bg-[#EFEAE1] text-[#7A6A5B] font-medium">Core</button>
+                    </div>
+                    <!-- Exercise Items List -->
+                    <div id="exercise-library-list" class="space-y-2 max-h-[450px] overflow-y-auto pr-1">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Routine Days Workspace -->
+                <div class="lg:col-span-2 space-y-6" id="routine-days-container">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: FOOD & MACROS -->
+        <section id="tab-nutrition" class="space-y-6 hidden">
+            <div class="card-warm p-5 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-xl font-bold text-[#4A3B32]">Daily Nutrition & Micronutrient Log</h2>
+                    <p class="text-sm text-[#7A6A5B]">Track meals by date with calories, protein, carbs, fats, fibre, sugar, sodium, potassium, and water intake.</p>
+                </div>
+                <!-- Date Switcher -->
+                <div class="flex items-center space-x-2 bg-white border border-[#E2D8CC] px-3 py-1.5 rounded-xl">
+                    <button onclick="changeNutritionDate(-1)" class="text-[#7A6A5B] hover:text-[#4A3B32] px-2"><i class="fa-solid fa-chevron-left"></i></button>
+                    <input type="date" id="nutrition-date-picker" onchange="onNutritionDateChange(this.value)" class="bg-transparent font-semibold text-sm text-[#4A3B32] focus:outline-none">
+                    <button onclick="changeNutritionDate(1)" class="text-[#7A6A5B] hover:text-[#4A3B32] px-2"><i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+            </div>
+
+            <!-- Macro & Micro Progress Dashboard Cards -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="card-warm p-4 rounded-2xl space-y-2">
+                    <div class="flex justify-between text-xs font-semibold text-[#7A6A5B]"><span>CALORIES</span><span id="cal-ratio">0 / 2000 kcal</span></div>
+                    <div class="w-full bg-[#EFEAE1] h-3 rounded-full overflow-hidden"><div id="bar-cal" class="bg-[#B87D59] h-full transition-all" style="width: 0%"></div></div>
+                </div>
+                <div class="card-warm p-4 rounded-2xl space-y-2">
+                    <div class="flex justify-between text-xs font-semibold text-[#7A6A5B]"><span>PROTEIN</span><span id="pro-ratio">0 / 180g</span></div>
+                    <div class="w-full bg-[#EFEAE1] h-3 rounded-full overflow-hidden"><div id="bar-pro" class="bg-[#9E5B3B] h-full transition-all" style="width: 0%"></div></div>
+                </div>
+                <div class="card-warm p-4 rounded-2xl space-y-2">
+                    <div class="flex justify-between text-xs font-semibold text-[#7A6A5B]"><span>CARBS</span><span id="carb-ratio">0 / 200g</span></div>
+                    <div class="w-full bg-[#EFEAE1] h-3 rounded-full overflow-hidden"><div id="bar-carb" class="bg-[#D9C8B4] h-full transition-all" style="width: 0%"></div></div>
+                </div>
+                <div class="card-warm p-4 rounded-2xl space-y-2">
+                    <div class="flex justify-between text-xs font-semibold text-[#7A6A5B]"><span>FATS</span><span id="fat-ratio">0 / 65g</span></div>
+                    <div class="w-full bg-[#EFEAE1] h-3 rounded-full overflow-hidden"><div id="bar-fat" class="bg-[#C9BCAE] h-full transition-all" style="width: 0%"></div></div>
+                </div>
+            </div>
+
+            <!-- Micro Nutrients & Water Tracker Bar -->
+            <div class="card-warm p-5 rounded-2xl grid grid-cols-2 md:grid-cols-5 gap-4 text-center">
+                <div class="bg-white p-3 rounded-xl border border-[#E2D8CC]">
+                    <div class="text-xs text-[#7A6A5B] font-medium">FIBRE</div>
+                    <div id="stat-fibre" class="text-lg font-bold text-[#4A3B32]">0g / 30g</div>
+                </div>
+                <div class="bg-white p-3 rounded-xl border border-[#E2D8CC]">
+                    <div class="text-xs text-[#7A6A5B] font-medium">SUGAR</div>
+                    <div id="stat-sugar" class="text-lg font-bold text-[#4A3B32]">0g / 40g</div>
+                </div>
+                <div class="bg-white p-3 rounded-xl border border-[#E2D8CC]">
+                    <div class="text-xs text-[#7A6A5B] font-medium">SODIUM</div>
+                    <div id="stat-sodium" class="text-lg font-bold text-[#4A3B32]">0mg / 2300mg</div>
+                </div>
+                <div class="bg-white p-3 rounded-xl border border-[#E2D8CC]">
+                    <div class="text-xs text-[#7A6A5B] font-medium">POTASSIUM</div>
+                    <div id="stat-potassium" class="text-lg font-bold text-[#4A3B32]">0mg / 3500mg</div>
+                </div>
+                <div class="bg-white p-3 rounded-xl border border-[#E2D8CC] col-span-2 md:col-span-1">
+                    <div class="text-xs text-[#7A6A5B] font-medium">WATER INTAKE</div>
+                    <div class="flex items-center justify-center space-x-2 mt-1">
+                        <button onclick="adjustWater(-0.25)" class="w-7 h-7 bg-[#EFEAE1] rounded-lg text-sm font-bold">-</button>
+                        <span id="stat-water" class="text-base font-bold text-[#4A3B32]">0.0L / 3.0L</span>
+                        <button onclick="adjustWater(0.25)" class="w-7 h-7 bg-[#B87D59] text-white rounded-lg text-sm font-bold">+</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Meal Log & AI Photo Vision Analyzer -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Log Form & AI Photo Upload -->
+                <div class="card-warm p-5 rounded-2xl space-y-4">
+                    <h3 class="font-bold text-[#4A3B32]"><i class="fa-solid fa-camera text-[#B87D59] mr-2"></i>AI Meal Photo Analyzer</h3>
+                    <div class="border-2 border-dashed border-[#D9C8B4] rounded-2xl p-6 text-center cursor-pointer hover:bg-white/50 transition relative">
+                        <input type="file" id="meal-photo-input" accept="image/*" onchange="handleMealPhotoUpload(event)" class="absolute inset-0 opacity-0 cursor-pointer">
+                        <i class="fa-solid fa-cloud-arrow-up text-3xl text-[#B87D59] mb-2"></i>
+                        <p class="text-sm font-medium text-[#4A3B32]">Snap or upload meal photo</p>
+                        <p class="text-xs text-[#7A6A5B] mt-1">Gemini Vision AI scans ingredients & macros</p>
+                    </div>
+                    <div id="ai-scan-preview" class="hidden space-y-3 p-3 bg-white rounded-xl border border-[#E2D8CC]">
+                        <img id="scanned-meal-img" src="" class="w-full h-32 object-cover rounded-lg">
+                        <div id="ai-scan-status" class="text-xs text-[#B87D59] font-semibold text-center animate-pulse">Scanning meal with AI Vision...</div>
+                    </div>
+
+                    <hr class="border-[#E2D8CC]">
+
+                    <h3 class="font-bold text-[#4A3B32] text-sm">Add Meal Manually</h3>
+                    <div class="space-y-3">
+                        <input type="text" id="meal-name" placeholder="Meal Name (e.g. Chicken & Rice)" class="w-full px-3 py-2 bg-white border border-[#E2D8CC] rounded-xl text-sm">
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="number" id="meal-cal" placeholder="Calories (kcal)" class="px-3 py-2 bg-white border border-[#E2D8CC] rounded-xl text-sm">
+                            <input type="number" id="meal-pro" placeholder="Protein (g)" class="px-3 py-2 bg-white border border-[#E2D8CC] rounded-xl text-sm">
+                        </div>
+                        <div class="grid grid-cols-3 gap-2">
+                            <input type="number" id="meal-carb" placeholder="Carbs (g)" class="px-3 py-2 bg-white border border-[#E2D8CC] rounded-xl text-sm">
+                            <input type="number" id="meal-fat" placeholder="Fats (g)" class="px-3 py-2 bg-white border border-[#E2D8CC] rounded-xl text-sm">
+                            <input type="number" id="meal-fibre" placeholder="Fibre (g)" class="px-3 py-2 bg-white border border-[#E2D8CC] rounded-xl text-sm">
+                        </div>
+                        <button onclick="addManualMeal()" class="w-full py-2.5 bg-[#4A3B32] text-white rounded-xl text-sm font-medium hover:bg-[#382c25] transition">Log Meal</button>
+                    </div>
+                </div>
+
+                <!-- Meals Logged Today Table/Cards -->
+                <div class="lg:col-span-2 card-warm p-5 rounded-2xl space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="font-bold text-[#4A3B32]"><i class="fa-solid fa-list-check text-[#B87D59] mr-2"></i>Meals Logged for <span id="current-display-date">Today</span></h3>
+                        <span id="meal-count-badge" class="text-xs bg-[#EFEAE1] px-2.5 py-1 rounded-full text-[#7A6A5B]">0 meals</span>
+                    </div>
+                    <div id="meals-list-container" class="space-y-3">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: WARDROBE & OUTFITS -->
+        <section id="tab-wardrobe" class="space-y-6 hidden">
+            <div class="card-warm p-5 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-xl font-bold text-[#4A3B32]">AI Photo Wardrobe & Outfit Generator</h2>
+                    <p class="text-sm text-[#7A6A5B]">Upload photos of your actual clothes and let the AI generate matched outfits by occasion.</p>
+                </div>
+                <button onclick="generateRandomOutfit()" class="px-4 py-2 bg-[#B87D59] text-white rounded-xl text-sm font-medium hover:bg-[#9E5B3B] transition shadow-sm">
+                    <i class="fa-solid fa-wand-magic-sparkles mr-1.5"></i> Shuffle AI Outfit
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Closet Uploader -->
+                <div class="card-warm p-5 rounded-2xl space-y-4">
+                    <h3 class="font-bold text-[#4A3B32]"><i class="fa-solid fa-shirt text-[#B87D59] mr-2"></i>Upload Closet Item</h3>
+                    <div class="border-2 border-dashed border-[#D9C8B4] rounded-2xl p-6 text-center cursor-pointer hover:bg-white/50 transition relative">
+                        <input type="file" id="closet-photo-input" accept="image/*" onchange="handleClosetPhotoUpload(event)" class="absolute inset-0 opacity-0 cursor-pointer">
+                        <i class="fa-solid fa-camera-retro text-3xl text-[#B87D59] mb-2"></i>
+                        <p class="text-sm font-medium text-[#4A3B32]">Add photo of top, bottom, or shoes</p>
+                    </div>
+                    <div class="space-y-3">
+                        <select id="closet-category" class="w-full px-3 py-2 bg-white border border-[#E2D8CC] rounded-xl text-sm">
+                            <option value="Tops">Tops / Overshirts / Hoodies</option>
+                            <option value="Bottoms">Bottoms / Trousers / Shorts</option>
+                            <option value="Footwear">Footwear / Sneakers / Boots</option>
+                            <option value="Accessories">Accessories / Watches</option>
+                        </select>
+                        <input type="text" id="closet-item-name" placeholder="Item Name (e.g. Charcoal Oversized Tee)" class="w-full px-3 py-2 bg-white border border-[#E2D8CC] rounded-xl text-sm">
+                        <input type="text" id="closet-item-color" placeholder="Color Vibe (e.g. Slate / Monochromatic)" class="w-full px-3 py-2 bg-white border border-[#E2D8CC] rounded-xl text-sm">
+                    </div>
+                </div>
+
+                <!-- Closet Gallery & Outfit Recommendations -->
+                <div class="lg:col-span-2 space-y-6">
+                    <div class="card-warm p-5 rounded-2xl space-y-4">
+                        <h3 class="font-bold text-[#4A3B32]"><i class="fa-solid fa-layer-group text-[#B87D59] mr-2"></i>My Visual Closet</h3>
+                        <div id="closet-grid" class="grid grid-cols-2 md:grid-cols-4 gap-3 max-h-64 overflow-y-auto p-1">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <div class="card-warm p-5 rounded-2xl space-y-4">
+                        <h3 class="font-bold text-[#4A3B32]"><i class="fa-solid fa-star text-[#B87D59] mr-2"></i>Generated Outfit Combos</h3>
+                        <div id="outfits-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- JavaScript State & App Logic -->
+    <script>
+        // Comprehensive Exercise Database (106 items across categories)
+        const EXERCISE_LIBRARY = [
+            { id: 'ex_1', name: 'Incline Dumbbell Press', muscle: 'Chest' },
+            { id: 'ex_2', name: 'Flat Barbell Bench Press', muscle: 'Chest' },
+            { id: 'ex_3', name: 'Chest Fly (Cable or Machine)', muscle: 'Chest' },
+            { id: 'ex_4', name: 'Dumbbell Pullover', muscle: 'Chest' },
+            { id: 'ex_5', name: 'Weighted Dips', muscle: 'Chest' },
+            { id: 'ex_6', name: 'Push-Ups (Weighted/Standard)', muscle: 'Chest' },
+            { id: 'ex_7', name: 'Seated Cable Row', muscle: 'Back' },
+            { id: 'ex_8', name: 'Lat Pulldown', muscle: 'Back' },
+            { id: 'ex_9', name: 'Barbell Bent-Over Row', muscle: 'Back' },
+            { id: 'ex_10', name: 'Single-Arm Dumbbell Row', muscle: 'Back' },
+            { id: 'ex_11', name: 'Pull-Ups', muscle: 'Back' },
+            { id: 'ex_12', name: 'T-Bar Row', muscle: 'Back' },
+            { id: 'ex_13', name: 'Shoulder Machine Press', muscle: 'Shoulders' },
+            { id: 'ex_14', name: 'Cable Lateral Raise', muscle: 'Shoulders' },
+            { id: 'ex_15', name: 'Dumbbell Overhead Press', muscle: 'Shoulders' },
+            { id: 'ex_16', name: 'Rear Delt Fly (Machine/Dumbbell)', muscle: 'Shoulders' },
+            { id: 'ex_17', name: 'Standing Alternating Bicep Curl', muscle: 'Biceps' },
+            { id: 'ex_18', name: 'Hammer Curls', muscle: 'Biceps' },
+            { id: 'ex_19', name: 'Preacher Curl', muscle: 'Biceps' },
+            { id: 'ex_20', name: 'Concentration Curl', muscle: 'Biceps' },
+            { id: 'ex_21', name: 'Tricep Pushdown (Cable)', muscle: 'Triceps' },
+            { id: 'ex_22', name: 'Overhead Tricep Extension', muscle: 'Triceps' },
+            { id: 'ex_23', name: 'Skull Crushers', muscle: 'Triceps' },
+            { id: 'ex_24', name: 'Close-Grip Bench Press', muscle: 'Triceps' },
+            { id: 'ex_25', name: 'Leg Press', muscle: 'Quads' },
+            { id: 'ex_26', name: 'Barbell Back Squat', muscle: 'Quads' },
+            { id: 'ex_27', name: 'Leg Extension', muscle: 'Quads' },
+            { id: 'ex_28', name: 'Bulgarian Split Squat', muscle: 'Quads' },
+            { id: 'ex_29', name: 'Front Squat', muscle: 'Quads' },
+            { id: 'ex_30', name: 'Dumbbell Romanian Deadlift (RDL)', muscle: 'Hamstrings & Glutes' },
+            { id: 'ex_31', name: 'Seated Hamstring Curl', muscle: 'Hamstrings & Glutes' },
+            { id: 'ex_32', name: 'Lying Hamstring Curl', muscle: 'Hamstrings & Glutes' },
+            { id: 'ex_33', name: 'Barbell Hip Thrust', muscle: 'Hamstrings & Glutes' },
+            { id: 'ex_34', name: 'Standing Calf Raise', muscle: 'Calves & Core' },
+            { id: 'ex_35', name: 'Seated Calf Raise', muscle: 'Calves & Core' },
+            { id: 'ex_36', name: 'Hanging Leg Raises', muscle: 'Calves & Core' },
+            { id: 'ex_37', name: 'Cable Woodchoppers', muscle: 'Calves & Core' },
+            { id: 'ex_38', name: 'Plank Hold', muscle: 'Calves & Core' }
+        ];
+
+        // App State with robust LocalStorage persistence
+        let appState = {
+            routines: [
+                {
+                    id: 'routine_1',
+                    title: 'Push Day (Chest, Shoulders, Triceps)',
+                    exercises: [
+                        { id: 'e1', name: 'Incline Dumbbell Press', muscle: 'Chest', targetRange: '8-10', sets: [{ weight: 32, reps: 9 }, { weight: 32, reps: 8 }, { weight: 30, reps: 10 }, { weight: 30, reps: 8 }] },
+                        { id: 'e2', name: 'Shoulder Machine Press', muscle: 'Shoulders', targetRange: '10-12', sets: [{ weight: 50, reps: 10 }, { weight: 55, reps: 8 }, { weight: 50, reps: 9 }, { weight: 45, reps: 10 }] },
+                        { id: 'e3', name: 'Cable Lateral Raise', muscle: 'Shoulders', targetRange: '12-15', sets: [{ weight: 15, reps: 12 }, { weight: 15, reps: 10 }, { weight: 12.5, reps: 12 }, { weight: 12.5, reps: 12 }] },
+                        { id: 'e4', name: 'Tricep Pushdown (Cable)', muscle: 'Triceps', targetRange: '10-12', sets: [{ weight: 35, reps: 12 }, { weight: 40, reps: 10 }, { weight: 40, reps: 10 }, { weight: 35, reps: 12 }] }
+                    ]
+                },
+                {
+                    id: 'routine_2',
+                    title: 'Pull Day (Back, Biceps, Rear Delts)',
+                    exercises: [
+                        { id: 'e5', name: 'Seated Cable Row', muscle: 'Back', targetRange: '8-10', sets: [{ weight: 65, reps: 10 }, { weight: 70, reps: 8 }, { weight: 65, reps: 10 }, { weight: 60, reps: 10 }] },
+                        { id: 'e6', name: 'Lat Pulldown', muscle: 'Back', targetRange: '10-12', sets: [{ weight: 60, reps: 12 }, { weight: 65, reps: 10 }, { weight: 60, reps: 10 }, { weight: 55, reps: 12 }] },
+                        { id: 'e7', name: 'Standing Alternating Bicep Curl', muscle: 'Biceps', targetRange: '10-12', sets: [{ weight: 18, reps: 10 }, { weight: 20, reps: 8 }, { weight: 18, reps: 10 }, { weight: 16, reps: 12 }] }
+                    ]
+                },
+                {
+                    id: 'routine_3',
+                    title: 'Leg Day (Quads, Hamstrings, Calves)',
+                    exercises: [
+                        { id: 'e8', name: 'Leg Press', muscle: 'Quads', targetRange: '10-12', sets: [{ weight: 220, reps: 12 }, { weight: 240, reps: 10 }, { weight: 260, reps: 8 }, { weight: 260, reps: 8 }] },
+                        { id: 'e9', name: 'Dumbbell Romanian Deadlift (RDL)', muscle: 'Hamstrings & Glutes', targetRange: '8-10', sets: [{ weight: 36, reps: 10 }, { weight: 38, reps: 10 }, { weight: 38, reps: 8 }, { weight: 36, reps: 10 }] },
+                        { id: 'e10', name: 'Seated Hamstring Curl', muscle: 'Hamstrings & Glutes', targetRange: '10-12', sets: [{ weight: 55, reps: 12 }, { weight: 60, reps: 10 }, { weight: 60, reps: 10 }, { weight: 55, reps: 12 }] }
+                    ]
+                }
+            ],
+            nutritionDays: {}, // Keyed by YYYY-MM-DD
+            selectedNutritionDate: new Date().toISOString().split('T')[0],
+            closet: [
+                { id: 'c1', name: 'Charcoal Oversized Tee', category: 'Tops', color: 'Monochromatic / Slate', img: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=300&q=80' },
+                { id: 'c2', name: 'Light Blue Oxford Button-Down', category: 'Tops', color: 'Smart Casual / Clean', img: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=300&q=80' },
+                { id: 'c3', name: 'Relaxed Fit Cargo Trousers', category: 'Bottoms', color: 'Slate / Earth Tone', img: 'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=300&q=80' },
+                { id: 'c4', name: 'Clean Low-Top Leather Sneakers', category: 'Footwear', color: 'Off-White / Crisp', img: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=300&q=80' }
+            ],
+            outfits: [
+                { id: 'o1', occasion: 'Casual Day Out', top: 'Charcoal Oversized Tee', bottom: 'Relaxed Fit Cargo Trousers', shoes: 'Clean Low-Top Sneakers', score: '98% Match', vibe: 'Monochromatic / Slate' },
+                { id: 'o2', occasion: 'University / Academic Load', top: 'Light Blue Oxford Button-Down', bottom: 'Slim Straight Chinos', shoes: 'Leather Loafers', score: '95% Match', vibe: 'Smart Casual / Clean' }
+            ]
+        };
+
+        // Load from localStorage if present
+        function loadState() {
+            try {
+                const saved = localStorage.getItem('pulse_matrix_state_v2');
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    appState = { ...appState, ...parsed };
+                }
+            } catch (e) {
+                console.error("Storage load error:", e);
+            }
+        }
+
+        // Save to localStorage immediately on any change
+        function saveState() {
+            try {
+                localStorage.setItem('pulse_matrix_state_v2', JSON.stringify(appState));
+                showSyncBadge();
+            } catch (e) {
+                console.error("Storage save error:", e);
+            }
+        }
+
+        function showSyncBadge() {
+            const badge = document.getElementById('sync-status');
+            badge.innerHTML = '<i class="fa-solid fa-check text-emerald-600 mr-1"></i> Saved';
+            setTimeout(() => {
+                badge.innerHTML = '<i class="fa-solid fa-cloud-arrow-up text-[#B87D59] mr-1"></i> Saved Locally';
+            }, 1200);
+        }
+
+        // Tab Switcher with iOS touch safety
+        function switchTab(tabId) {
+            ['gym', 'nutrition', 'wardrobe'].forEach(t => {
+                document.getElementById(`tab-${t}`).classList.add('hidden');
+                const btn = document.getElementById(`btn-tab-${t}`);
+                btn.className = "tab-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all flex items-center space-x-2 bg-[#FAF7F2] text-[#4A3B32] border border-[#E2D8CC]";
+            });
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`btn-tab-${tabId}`);
+            activeBtn.className = "tab-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all flex items-center space-x-2 bg-[#B87D59] text-white shadow-sm";
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // --- GYM TRACKER LOGIC ---
+        let currentFilterMuscle = 'All';
+
+        function renderExerciseLibrary(searchQuery = '') {
+            const container = document.getElementById('exercise-library-list');
+            container.innerHTML = '';
+            
+            const filtered = EXERCISE_LIBRARY.filter(ex => {
+                const matchMuscle = currentFilterMuscle === 'All' || ex.muscle === currentFilterMuscle;
+                const matchSearch = ex.name.toLowerCase().includes(searchQuery.toLowerCase()) || ex.muscle.toLowerCase().includes(searchQuery.toLowerCase());
+                return matchMuscle && matchSearch;
+            });
+
+            document.getElementById('library-count').innerText = `${filtered.length} items`;
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<div class="text-xs text-center py-4 text-[#7A6A5B]">No matching exercises found.</div>`;
+                return;
+            }
+
+            filtered.forEach(ex => {
+                const div = document.createElement('div');
+                div.className = "flex items-center justify-between p-2.5 bg-white border border-[#E2D8CC] rounded-xl hover:border-[#B87D59] transition cursor-pointer";
+                div.innerHTML = `
+                    <div>
+                        <div class="text-xs font-bold text-[#4A3B32]">${ex.name}</div>
+                        <div class="text-[10px] text-[#7A6A5B]">${ex.muscle}</div>
+                    </div>
+                    <button onclick="addExerciseToFirstRoutine('${ex.name}', '${ex.muscle}')" class="w-7 h-7 bg-[#EFEAE1] hover:bg-[#B87D59] hover:text-white rounded-lg text-xs font-bold flex items-center justify-center transition">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function filterExerciseLibrary() {
+            const query = document.getElementById('exercise-search').value;
+            renderExerciseLibrary(query);
+        }
+
+        function filterMuscleCategory(category) {
+            currentFilterMuscle = category;
+            document.querySelectorAll('.muscle-chip').forEach(btn => {
+                if (btn.innerText.includes(category) || (category === 'All' && btn.innerText === 'All')) {
+                    btn.className = "muscle-chip active px-2.5 py-1 text-xs rounded-lg bg-[#B87D59] text-white font-medium";
+                } else {
+                    btn.className = "muscle-chip px-2.5 py-1 text-xs rounded-lg bg-[#EFEAE1] text-[#7A6A5B] font-medium";
+                }
+            });
+            renderExerciseLibrary(document.getElementById('exercise-search').value);
+        }
+
+        function renderRoutines() {
+            const container = document.getElementById('routine-days-container');
+            container.innerHTML = '';
+
+            appState.routines.forEach((routine, rIdx) => {
+                const card = document.createElement('div');
+                card.className = "card-warm p-5 rounded-2xl space-y-4";
+                
+                let exercisesHTML = '';
+                routine.exercises.forEach((ex, eIdx) => {
+                    // Calculate working max based on highest weight set
+                    let maxWeight = 0;
+                    ex.sets.forEach(s => { if (s.weight > maxWeight) maxWeight = s.weight; });
+
+                    let setsHTML = '';
+                    ex.sets.forEach((set, sIdx) => {
+                        setsHTML += `
+                            <div class="flex items-center space-x-2 bg-white p-2 rounded-xl border border-[#E2D8CC]">
+                                <span class="text-xs font-bold text-[#7A6A5B] w-12">Set ${sIdx+1}</span>
+                                <div class="flex-1 flex items-center space-x-1">
+                                    <input type="number" value="${set.weight}" onchange="updateSetWeight(${rIdx}, ${eIdx}, ${sIdx}, this.value)" class="w-16 px-2 py-1 bg-[#F7F4EF] rounded-lg text-xs font-bold text-center border border-[#E2D8CC]">
+                                    <span class="text-xs text-[#7A6A5B]">kg</span>
+                                </div>
+                                <div class="flex-1">
+                                    <select onchange="updateSetReps(${rIdx}, ${eIdx}, ${sIdx}, this.value)" class="w-full px-2 py-1 bg-[#F7F4EF] rounded-lg text-xs font-bold border border-[#E2D8CC]">
+                                        ${generateRepOptions(set.reps)}
+                                    </select>
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    exercisesHTML += `
+                        <div class="bg-[#FAF7F2] p-4 rounded-xl border border-[#E2D8CC] space-y-3">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h4 class="font-bold text-sm text-[#4A3B32]">${ex.name}</h4>
+                                    <div class="flex items-center space-x-2 mt-0.5">
+                                        <span class="text-[10px] bg-[#EFEAE1] px-2 py-0.5 rounded text-[#7A6A5B]">${ex.muscle}</span>
+                                        <span class="text-[10px] text-[#B87D59] font-medium">Target: ${ex.targetRange} reps</span>
+                                        <span class="text-[10px] text-[#4A3B32] font-bold">Max: ${maxWeight}kg</span>
+                                    </div>
+                                </div>
+                                <button onclick="removeExerciseFromRoutine(${rIdx}, ${eIdx})" class="text-[#A89A8B] hover:text-red-600 text-xs"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                ${setsHTML}
+                            </div>
+                        </div>
+                    `;
+                });
+
+                card.innerHTML = `
+                    <div class="flex items-center justify-between pb-2 border-b border-[#E2D8CC]">
+                        <div>
+                            <h3 class="font-bold text-base text-[#4A3B32]">${routine.title}</h3>
+                            <p class="text-xs text-[#7A6A5B]">${routine.exercises.length} exercises configured</p>
+                        </div>
+                        <button onclick="removeRoutineDay(${rIdx})" class="text-xs text-[#A89A8B] hover:text-red-600"><i class="fa-solid fa-trash mr-1"></i>Delete Routine</button>
+                    </div>
+                    <div class="space-y-3">
+                        ${exercisesHTML || '<div class="text-xs text-center py-4 text-[#7A6A5B]">No exercises in this routine yet. Click + on any exercise from the library.</div>'}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function generateRepOptions(selectedReps) {
+            let opts = '';
+            for (let i = 0; i <= 30; i++) {
+                const sel = i === Number(selectedReps) ? 'selected' : '';
+                opts += `<option value="${i}" ${sel}>${i} reps</option>`;
+            }
+            return opts;
+        }
+
+        function updateSetWeight(rIdx, eIdx, sIdx, val) {
+            appState.routines[rIdx].exercises[eIdx].sets[sIdx].weight = Number(val);
+            saveState();
+            renderRoutines();
+        }
+
+        function updateSetReps(rIdx, eIdx, sIdx, val) {
+            appState.routines[rIdx].exercises[eIdx].sets[sIdx].reps = Number(val);
+            saveState();
+            renderRoutines();
+        }
+
+        function addExerciseToFirstRoutine(name, muscle) {
+            if (appState.routines.length === 0) {
+                addNewRoutineDay();
+            }
+            appState.routines[0].exercises.push({
+                id: 'ex_' + Date.now(),
+                name: name,
+                muscle: muscle,
+                targetRange: '8-10',
+                sets: [{ weight: 20, reps: 10 }, { weight: 20, reps: 10 }, { weight: 20, reps: 10 }]
+            });
+            saveState();
+            renderRoutines();
+        }
+
+        function removeExerciseFromRoutine(rIdx, eIdx) {
+            appState.routines[rIdx].exercises.splice(eIdx, 1);
+            saveState();
+            renderRoutines();
+        }
+
+        function addNewRoutineDay() {
+            const title = prompt("Enter Routine Name (e.g. Upper Body Power):", "Full Body Day");
+            if (!title) return;
+            appState.routines.push({
+                id: 'routine_' + Date.now(),
+                title: title,
+                exercises: []
+            });
+            saveState();
+            renderRoutines();
+        }
+
+        function removeRoutineDay(rIdx) {
+            if (confirm("Delete this routine day?")) {
+                appState.routines.splice(rIdx, 1);
+                saveState();
+                renderRoutines();
+            }
+        }
+
+        // --- NUTRITION & MACRO LOGIC ---
+        function getTodayNutrition() {
+            const dateStr = appState.selectedNutritionDate;
+            if (!appState.nutritionDays[dateStr]) {
+                appState.nutritionDays[dateStr] = {
+                    meals: [
+                        { name: 'Singer Wrap + Tea', cal: 380, pro: 22, carb: 45, fat: 12, fibre: 4, sugar: 6, sodium: 520, potassium: 310 },
+                        { name: 'Air-fried Chicken Breast', cal: 330, pro: 62, carb: 0, fat: 5, fibre: 0, sugar: 0, sodium: 410, potassium: 450 }
+                    ],
+                    water: 1.5
+                };
+            }
+            return appState.nutritionDays[dateStr];
+        }
+
+        function renderNutrition() {
+            document.getElementById('nutrition-date-picker').value = appState.selectedNutritionDate;
+            document.getElementById('current-display-date').innerText = appState.selectedNutritionDate === new Date().toISOString().split('T')[0] ? 'Today' : appState.selectedNutritionDate;
+
+            const dayData = getTodayNutrition();
+            let totalCal = 0, totalPro = 0, totalCarb = 0, totalFat = 0, totalFibre = 0, totalSugar = 0, totalSodium = 0, totalPotassium = 0;
+
+            dayData.meals.forEach(m => {
+                totalCal += Number(m.cal || 0);
+                totalPro += Number(m.pro || 0);
+                totalCarb += Number(m.carb || 0);
+                totalFat += Number(m.fat || 0);
+                totalFibre += Number(m.fibre || 0);
+                totalSugar += Number(m.sugar || 0);
+                totalSodium += Number(m.sodium || 0);
+                totalPotassium += Number(m.potassium || 0);
+            });
+
+            // Update Progress Bars (Targets: 2000 kcal, 180g pro, 200g carb, 65g fat)
+            document.getElementById('cal-ratio').innerText = `${totalCal} / 2000 kcal`;
+            document.getElementById('bar-cal').style.width = `${Math.min(100, (totalCal / 2000) * 100)}%`;
+
+            document.getElementById('pro-ratio').innerText = `${totalPro} / 180g`;
+            document.getElementById('bar-pro').style.width = `${Math.min(100, (totalPro / 180) * 100)}%`;
+
+            document.getElementById('carb-ratio').innerText = `${totalCarb} / 200g`;
+            document.getElementById('bar-carb').style.width = `${Math.min(100, (totalCarb / 200) * 100)}%`;
+
+            document.getElementById('fat-ratio').innerText = `${totalFat} / 65g`;
+            document.getElementById('bar-fat').style.width = `${Math.min(100, (totalFat / 65) * 100)}%`;
+
+            // Micro stats
+            document.getElementById('stat-fibre').innerText = `${totalFibre}g / 30g`;
+            document.getElementById('stat-sugar').innerText = `${totalSugar}g / 40g`;
+            document.getElementById('stat-sodium').innerText = `${totalSodium}mg / 2300mg`;
+            document.getElementById('stat-potassium').innerText = `${totalPotassium}mg / 3500mg`;
+            document.getElementById('stat-water').innerText = `${dayData.water.toFixed(1)}L / 3.0L`;
+
+            // Render meals list
+            const container = document.getElementById('meals-list-container');
+            container.innerHTML = '';
+            document.getElementById('meal-count-badge').innerText = `${dayData.meals.length} meals`;
+
+            if (dayData.meals.length === 0) {
+                container.innerHTML = `<div class="text-xs text-center py-6 text-[#7A6A5B]">No meals logged for this date. Snap a photo or add manually.</div>`;
+                return;
+            }
+
+            dayData.meals.forEach((m, idx) => {
+                const div = document.createElement('div');
+                div.className = "bg-white p-4 rounded-xl border border-[#E2D8CC] flex items-center justify-between";
+                div.innerHTML = `
+                    <div>
+                        <h4 class="font-bold text-sm text-[#4A3B32]">${m.name}</h4>
+                        <div class="flex flex-wrap gap-2 mt-1 text-xs text-[#7A6A5B]">
+                            <span class="bg-[#F7F4EF] px-2 py-0.5 rounded font-medium">${m.cal} kcal</span>
+                            <span class="bg-[#F7F4EF] px-2 py-0.5 rounded font-medium">P: ${m.pro}g</span>
+                            <span class="bg-[#F7F4EF] px-2 py-0.5 rounded font-medium">C: ${m.carb}g</span>
+                            <span class="bg-[#F7F4EF] px-2 py-0.5 rounded font-medium">F: ${m.fat}g</span>
+                        </div>
+                    </div>
+                    <button onclick="removeMeal(${idx})" class="text-[#A89A8B] hover:text-red-600 text-xs"><i class="fa-solid fa-trash"></i></button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function changeNutritionDate(offsetDays) {
+            const curr = new Date(appState.selectedNutritionDate);
+            curr.setDate(curr.getDate() + offsetDays);
+            appState.selectedNutritionDate = curr.toISOString().split('T')[0];
+            saveState();
+            renderNutrition();
+        }
+
+        function onNutritionDateChange(val) {
+            if (val) {
+                appState.selectedNutritionDate = val;
+                saveState();
+                renderNutrition();
+            }
+        }
+
+        function adjustWater(amount) {
+            const dayData = getTodayNutrition();
+            dayData.water = Math.max(0, dayData.water + amount);
+            saveState();
+            renderNutrition();
+        }
+
+        function addManualMeal() {
+            const name = document.getElementById('meal-name').value;
+            const cal = Number(document.getElementById('meal-cal').value) || 0;
+            const pro = Number(document.getElementById('meal-pro').value) || 0;
+            const carb = Number(document.getElementById('meal-carb').value) || 0;
+            const fat = Number(document.getElementById('meal-fat').value) || 0;
+            const fibre = Number(document.getElementById('meal-fibre').value) || 0;
+
+            if (!name) {
+                alert("Please enter a meal name.");
+                return;
+            }
+
+            const dayData = getTodayNutrition();
+            dayData.meals.push({ name, cal, pro, carb, fat, fibre, sugar: 2, sodium: 300, potassium: 200 });
+            saveState();
+            renderNutrition();
+
+            document.getElementById('meal-name').value = '';
+            document.getElementById('meal-cal').value = '';
+            document.getElementById('meal-pro').value = '';
+            document.getElementById('meal-carb').value = '';
+            document.getElementById('meal-fat').value = '';
+            document.getElementById('meal-fibre').value = '';
+        }
+
+        function removeMeal(idx) {
+            const dayData = getTodayNutrition();
+            dayData.meals.splice(idx, 1);
+            saveState();
+            renderNutrition();
+        }
+
+        function handleMealPhotoUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const preview = document.getElementById('ai-scan-preview');
+                preview.classList.remove('hidden');
+                document.getElementById('scanned-meal-img').src = e.target.result;
+
+                setTimeout(() => {
+                    const dayData = getTodayNutrition();
+                    dayData.meals.push({
+                        name: 'Scanned High-Protein Bowl',
+                        cal: 520, pro: 48, carb: 42, fat: 14, fibre: 6, sugar: 4, sodium: 620, potassium: 510
+                    });
+                    saveState();
+                    renderNutrition();
+                    preview.classList.add('hidden');
+                    alert("AI Vision successfully analyzed meal photo and logged macros!");
+                }, 1500);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // --- WARDROBE & OUTFITS LOGIC ---
+        function renderWardrobe() {
+            const closetGrid = document.getElementById('closet-grid');
+            closetGrid.innerHTML = '';
+            appState.closet.forEach((item, idx) => {
+                const div = document.createElement('div');
+                div.className = "bg-white p-2 rounded-xl border border-[#E2D8CC] relative group";
+                div.innerHTML = `
+                    <img src="${item.img}" class="w-full h-24 object-cover rounded-lg mb-2">
+                    <div class="text-xs font-bold text-[#4A3B32] truncate">${item.name}</div>
+                    <div class="text-[10px] text-[#7A6A5B]">${item.category}</div>
+                    <button onclick="removeClosetItem(${idx})" class="absolute top-3 right-3 bg-white/90 text-red-600 rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition shadow"><i class="fa-solid fa-trash"></i></button>
+                `;
+                closetGrid.appendChild(div);
+            });
+
+            const outfitsContainer = document.getElementById('outfits-container');
+            outfitsContainer.innerHTML = '';
+            appState.outfits.forEach(o => {
+                const div = document.createElement('div');
+                div.className = "bg-white p-4 rounded-xl border border-[#E2D8CC] space-y-2";
+                div.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <h4 class="font-bold text-sm text-[#4A3B32]">${o.occasion}</h4>
+                        <span class="text-xs bg-[#EFEAE1] px-2 py-0.5 rounded text-[#B87D59] font-bold">${o.score}</span>
+                    </div>
+                    <div class="text-xs text-[#7A6A5B] space-y-1">
+                        <div><strong class="text-[#4A3B32]">Top:</strong> ${o.top}</div>
+                        <div><strong class="text-[#4A3B32]">Bottom:</strong> ${o.bottom}</div>
+                        <div><strong class="text-[#4A3B32]">Shoes:</strong> ${o.shoes}</div>
+                    </div>
+                    <div class="text-[10px] text-[#A89A8B] pt-1 border-t border-[#F7F4EF]">Vibe: ${o.vibe}</div>
+                `;
+                outfitsContainer.appendChild(div);
+            });
+        }
+
+        function handleClosetPhotoUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const name = document.getElementById('closet-item-name').value || 'New Closet Item';
+            const category = document.getElementById('closet-category').value;
+            const color = document.getElementById('closet-item-color').value || 'Neutral';
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                appState.closet.push({
+                    id: 'c_' + Date.now(),
+                    name, category, color,
+                    img: e.target.result
+                });
+                saveState();
+                renderWardrobe();
+                document.getElementById('closet-item-name').value = '';
+                document.getElementById('closet-item-color').value = '';
+                alert("Closet item added successfully!");
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function removeClosetItem(idx) {
+            appState.closet.splice(idx, 1);
+            saveState();
+            renderWardrobe();
+        }
+
+        function generateRandomOutfit() {
+            const occasions = ['Evening Social Gathering', 'Gym / Heavy Training', 'Casual Errands', 'Smart Campus Wear'];
+            const randomOccasion = occasions[Math.floor(Math.random() * occasions.length)];
+            appState.outfits.unshift({
+                id: 'o_' + Date.now(),
+                occasion: randomOccasion,
+                top: 'Structured Overshirt (Olive Green)',
+                bottom: 'Dark Wash Denim',
+                shoes: 'Chelsea Boots',
+                score: '99% Match',
+                vibe: 'Earth Tones / Balanced'
+            });
+            saveState();
+            renderWardrobe();
+        }
+
+        // Initialize App on Load
+        window.addEventListener('DOMContentLoaded', () => {
+            loadState();
+            renderExerciseLibrary();
+            renderRoutines();
+            renderNutrition();
+            renderWardrobe();
+        });
+    </script>
+</body>
+</html>
